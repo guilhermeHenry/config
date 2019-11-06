@@ -1,0 +1,20 @@
+{
+  "name": "config",
+  "version": "1.0.0",
+  "description": "config",
+  "main": "config.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/guilhermeHenry/config.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/guilhermeHenry/config/issues"
+  },
+  "homepage": "https://github.com/guilhermeHenry/config#readme"
+}
