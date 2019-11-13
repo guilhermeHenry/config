@@ -1,23 +1,21 @@
-//required
-//options
-//validator native
-//validator no native
+// Options
+// Required
+// Native Validator
+// Custom Validator
 
 let config = function(data) {
 	this.msg = [];
 	this.conf = data;
-
-	return this;
 }
 
 config.prototype.add = function(name, value = null, validator = false){
-	this.required = Array.isArray(value) || validator || value === null || typeof value === 'function' ? true : false;
+	this.required = Array.isArray(value) || validator || value === null || typeof value === 'function';
 
 	if (this.required && name in this.conf === false){
 		this.msg.push(`Passe propriedade ${name}`);
 	}
-
 	else if (this.required || !this.required && name in this.conf) {
+		// Validator native
 		switch(Array.isArray(value) ? 'array' : (value === null ? 'null': typeof value)){
 			case 'boolean':
 				if (typeof this.conf[name] !== 'boolean')
@@ -31,7 +29,8 @@ config.prototype.add = function(name, value = null, validator = false){
 				}
 				break;
 			case 'function':
-				return value();
+				// Custom Validator
+				value.bind(this)(this.conf[name]);
 				break;
 			case 'array':
 				if (value.indexOf(this.conf[name]) === -1)
@@ -40,39 +39,40 @@ config.prototype.add = function(name, value = null, validator = false){
 		}
 	}
 
-	// console.log(this.msg);
 	return this;
 }
 
-config.prototype.exe = function(){
-	return this.conf
+const pessoa = function (conf = null) {
+	this.config = new config(conf);
+	this.config.add('autoplay', true, true);
+	this.config.add('speed');
+	this.config.add('delay', ['linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out']);
+	this.config.add('item', this.checkItems);
+
+	if (this.config.msg.length > 0){
+		this.config.msg.forEach((msg, index) => console.log((index + 1) + ' - ' + msg));
+	}else{
+		this.init();
+	}
 }
 
-const pessoa = function (conf = null) {
-	this.c = new config(conf)
-	.add('autoplay', true, true)
-	.add('speed')
-	.add('delay', ['linear', 'ease', 'ease-in', 'ease-out', 'ease-in-out'])
-	.add('item', () => {})
-	.exe();
-
-	console.log(this.c);
-	this.init();
+pessoa.prototype.checkItems = function(item) {
+	if (!Array.isArray(item)) {
+		this.msg.push('propriedade Inválida');
+	}
 }
 
 pessoa.prototype.init = function(c) {
-	// console.log(':)');
+	console.log(this);
 }
 
 new pessoa({
 	speed: 100,
-	// item: 'item',
-	target: 'input',
-	delay: 'linear1'
+	item: [
+		{title: 'title', subtitle: 'subtitle'}
+	],
+	target: 'input'
 });
-
-
-
 
 
 
