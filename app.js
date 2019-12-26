@@ -46,3 +46,5 @@ config.prototype.add = function(name, value = null, validator = false){
 
 	return this;
 }
+
+export default config;
