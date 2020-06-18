@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+	<meta charset="UTF-8">
+	<title>Config</title>
+	<style>
+		*{box-sizing: border-box; padding: 0; margin: 0;}
+		#dev-notification{
+			left: 0;
+			top: 10px;
+			width: 100%;
+			display: none;
+			position: fixed;
+			font-family: roboto, arial, sans-serif;
+
+			transition-property: top;
+		    transition-duration: 1s;
+		    transition-timing-function: ease-out;
+		    transition-delay: 0s;
+		}
+
+		#dev-notification .content{
+			margin: 0 auto;
+			width: 450px;
+			display: flex;
+			max-width: 100%;
+			padding: 10px 15px 10px 10px;
+			border-radius: 5px;
+			flex-direction: column;
+			border: 1px solid #ccc;
+			box-shadow: 0 1px 5px rgba(0, 0, 0, .1);
+			background-color: #ececec;
+		}
+
+		#dev-notification .picture{width: 100px; padding: 10px 20px 10px 10px;}
+		#dev-notification .picture img{width: 100%;}
+
+		#dev-notification .container{width: 100%; display: flex; flex-direction: row;}
+
+		#dev-notification .container > article{width: 100%;}
+		#dev-notification .title{font-weight: 700; font-size: 16px;}
+		#dev-notification .text{font-weight: 400; font-size: 14px; padding-top: 5px;}
+
+		#dev-notification footer{width: 100%; padding-right: 5px; padding-bottom: 5px; padding-top: 10px; }
+		#dev-notification footer button{float: right; padding: 3px 10px; min-width: 60px; cursor: pointer;}
+		#dev-notification footer em{float: left; font-size: 12px; color: #888; font-weight: 500; padding: 4px 0;}
+		#dev-notification .box-information{
+			width: 100%;
+			background-color: white;
+			padding: 10px;
+			margin-top: 5px;
+			margin-bottom: 5px;
+			border: 1px solid #ccc;
+			font-size: 14px;
+			border-radius: 5px;
+		}
+	</style>
+</head>
+<body>
+
+<div id="dev-notification">
+	<div class="content">
+		<div class="container">
+			<header class="picture">
+				<img src="dev-icon.png" alt="">
+			</header>
+			<article>
+				<span class="title">Tratamento de erros da do plugin Slider</span>
+				<p class="text">
+					<span>Linha 91</span><br>
+					<span>Tipo de error: Syntax</span>
+				</p>
+				<div class="box-information">
+					<span>Linha 91</span><br>
+					<span>Tipo de error: Syntax</span>
+					<p>É um texto padrão em latim utilizado</p>
+				</div>
+				<footer>
+					<em>Mode developer</em>
+					<button type="button">Pronto!</button>
+				</footer>
+			</article>
+		</div>
+	</div>
+</div>
+
+<script type="module">
+
+	import config from './app.js';
+
+	const slider = function (callback) {
+		let a = config((rule) => {
+			rule.setBoolean('play', true);
+			rule.setOptions('speed', ['slowly', 'fast'], true);
+		});
+
+		callback(a);
+		
+		try {
+			a.getErrors();
+		} catch(e){
+			console.log(e.message);
+		}
+	}
+
+	new slider(app => {
+		app.play('true');
+		app.speed('fast');
+	});
+
+</script>
+</body>
+</html>

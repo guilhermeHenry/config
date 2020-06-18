@@ -1,50 +1,84 @@
-// Options
-// Required
-// Native Validator
-// Custom Validator
+export default function(callback = null) {
+	let configMethods = {};
 
-let config = function(data) {
-	this.err = [];
-	this.conf = data;
-}
+	//## RULES
+	let guidelines = {
+		// ## RULES
+		rules: {},
+		setRule(name, value) {
+			this.rules[name] = value;
+		},
+		getRule(name){
+			return this.rules.hasOwnProperty(name) ? this.rules[name] : null
+		},
+		getRules() {
+			return this.rules
+		},
 
-Object.defineProperty(config.prototype, 'msg', {
-  get: function() { return this.err; },
-  set: function(m) {this.err.push(m)}
-});
+		// ## ERRORS
+		errors: [],
+		required: [],
+		setError(value) {
+			this.errors.push(value);
+		},
+		getError(name){
+			return this.errors.hasOwnProperty(name) ? this.errors[name] : null
+		},
+		getErrors() {
+			if (this.getRequired()){
+				this.getRequired().forEach(required => {
+					if (!this.getRule(required)){
+						this.setError(`A propriedade ${required} deve ser informada!`);
+					}
+				});
+			}
+			
+			if (this.errors.length > 0){
+				this.errors.forEach(error => {
 
-config.prototype.add = function(name, value = null, validator = false){
-	this.required = Array.isArray(value) || validator || value === null || typeof value === 'function';
-
-	if (this.required && name in this.conf === false){
-		this.msg = `Passe propriedade ${name}`;
-	}
-	else if (this.required || !this.required && name in this.conf) {
-		// Validator native
-		switch(Array.isArray(value) ? 'array' : (value === null ? 'null': typeof value)){
-			case 'boolean':
-				if (typeof this.conf[name] !== 'boolean')
-					this.msg = `A propriedade ${name} deve ser um valor boleano (true ou false)`;
-				break;
-			case 'object':
-				if (isNaN(this.conf[name])){this.msg = `A propriedade ${name} deve ser um número`; break;}
-				if (Number(this.conf[name]) < value.min || Number(this.conf[name]) > value.max){
-					this.msg = `A propriedade ${name} deve ser um número maior ou igual a ${value.min} e menor ou igual a ${val.max}`;
-					break;
-				}
-				break;
-			case 'function':
-				// Custom Validator
-				value.bind(this)(this.conf[name]);
-				break;
-			case 'array':
-				if (value.indexOf(this.conf[name]) === -1)
-					this.msg = `A propriedade ${name} não existe. Escolha uma das seguintes opções: ${value.join(', ')}.`;
-				break;
+					throw new Error(error);
+				});
+			}
+		},
+		getRequired(){return this.required.length > 0 ? this.required : null},
+		setRequired(prop) {this.required.push(prop)},
+		removeRequired(prop) {
+			let index = this.getRequired().indexOf(prop);
+			if (index > -1){
+				this.required.splice(index, 1);
+			}
 		}
 	}
 
-	return this;
-}
+	configMethods.setOptions = function(name, options, required = false){
+		if (required){
+			guidelines.setRequired(name)
+		}
+		guidelines[name] = function (value) {
+			if (options.indexOf(value) > -1){
+				this.setRule(name, value);
+			}
+		}
+	}
 
-export default config;
+	configMethods.setBoolean = function(name, required = false){
+		if (required){
+			guidelines.setRequired(name)
+		}
+
+		guidelines[name] = function (value) {
+			this.removeRequired(name);
+			if (typeof value === 'boolean'){
+				this.setRule(name, value);
+			} else {
+				this.setError('A valor deve ser true ou false');
+			}
+		}
+	}
+
+	if (callback){
+		callback(configMethods);
+	}
+
+	return guidelines;
+}
